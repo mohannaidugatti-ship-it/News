@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nokia News</title>
+<style>
+body{margin:0;font-family:sans-serif;background:#fff;color:#111}
+header{background:#b00000;color:white;padding:14px;font-size:21px}
+nav{display:flex;flex-wrap:wrap;background:#eee}
+button{padding:12px;border:0;font-size:14px}
+#status{padding:10px;color:#555}
+.item{padding:13px;border-bottom:1px solid #ddd}
+a{color:#111;text-decoration:none;font-size:16px}
+</style>
+</head>
+<body>
+
+<header>📰 NOKIA NEWS</header>
+
+<nav>
+<button onclick="load('')">తాజా</button>
+<button onclick="load('Andhra Pradesh')">ఆంధ్రప్రదేశ్</button>
+<button onclick="load('Telangana')">తెలంగాణ</button>
+<button onclick="load('India')">జాతీయం</button>
+<button onclick="load('World')">ప్రపంచం</button>
+<button onclick="load('Telugu Cinema')">సినిమా</button>
+<button onclick="load('Sports')">క్రీడలు</button>
+</nav>
+
+<div id="status">వార్తలు లోడ్ అవుతున్నాయి...</div>
+<div id="news"></div>
+
+<script>
+async function load(topic=''){
+ const box=document.getElementById('news');
+ const status=document.getElementById('status');
+ box.innerHTML='';
+ status.innerText='వార్తలు వస్తున్నాయి...';
+
+ let feed=topic
+ ? 'https://news.google.com/rss/search?q='+encodeURIComponent(topic)+'&hl=te&gl=IN&ceid=IN:te'
+ : 'https://news.google.com/rss?hl=te&gl=IN&ceid=IN:te';
+
+ try{
+  let url='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(feed);
+  let res=await fetch(url);
+  let data=await res.json();
+
+  if(!data.items || !data.items.length) throw Error();
+
+  data.items.forEach(item=>{
+   let div=document.createElement('div');
+   div.className='item';
+   let a=document.createElement('a');
+   a.href=item.link;
+   a.target='_blank';
+   a.textContent='▸ '+item.title;
+   div.appendChild(a);
+   box.appendChild(div);
+  });
+  status.innerText='తాజా వార్తలు';
+ }catch(e){
+  status.innerText='వార్తలు లోడ్ కాలేదు. మళ్లీ ప్రయత్నించండి.';
+ }
+}
+load();
+</script>
+
+</body>
+</html>
